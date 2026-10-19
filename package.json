@@ -8,7 +8,7 @@
 		"validate": "node scripts/validate-registry.mjs plugins.json"
 	},
 	"dependencies": {
-		"@polycreator/plugin-manifest": "^0.3.3",
+		"@polycreator/plugin-manifest": "^0.4.0",
 		"fflate": "^0.8.2"
 	},
 	"engines": {

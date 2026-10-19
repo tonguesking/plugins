@@ -9,16 +9,16 @@ importers:
   .:
     dependencies:
       '@polycreator/plugin-manifest':
-        specifier: ^0.3.3
-        version: 0.3.3
+        specifier: ^0.4.0
+        version: 0.4.0
       fflate:
         specifier: ^0.8.2
         version: 0.8.3
 
 packages:
 
-  '@polycreator/plugin-manifest@0.3.3':
-    resolution: {integrity: sha512-DF806Fx6EWgurZMBfujyB/0eVc19ItSfl9wj36xpdCTo2zMTiJRZMB3rdUCTmsDlWGfP8CFatuDu7pckLksf1A==}
+  '@polycreator/plugin-manifest@0.4.0':
+    resolution: {integrity: sha512-Kv63/0jup0kjW2SwAWstdaWu3q9caKNEdyKD9Zu4NGIEPFsdt8t0PLQgX9HuvPOgkZcw+GhAzqy5J5v6j2NI6g==}
 
   fflate@0.8.3:
     resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
@@ -28,7 +28,7 @@ packages:
 
 snapshots:
 
-  '@polycreator/plugin-manifest@0.3.3':
+  '@polycreator/plugin-manifest@0.4.0':
     dependencies:
       zod: 4.6.7
 
