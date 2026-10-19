@@ -272,11 +272,27 @@ async function main() {
 		// plugin repo an entry touches belongs to the submitter.
 		const submitter = pr.user.login;
 		const ownerOf = (entry) => entry.repo.split("/")[0];
+		// Official entries (plugin repo under the registry's own org) may be
+		// submitted by any org member — the repo owner is the org itself, so
+		// the personal-ownership rule can never pass for them. Membership is
+		// checked live; non-members submitting org-owned repos still fail.
+		const registryOrg = repo.split("/")[0];
+		const orgMembers = new Set();
+		try {
+			const members = await gh(`/orgs/${registryOrg}/members?per_page=100`);
+			if (Array.isArray(members)) for (const m of members) orgMembers.add(m.login);
+		} catch {
+			// membership lookup failed — fall through to the strict rule
+		}
+		const isOfficialEntry = (entry) => ownerOf(entry) === registryOrg;
+		const maySubmit = (entry) =>
+			ownerOf(entry) === submitter || (isOfficialEntry(entry) && orgMembers.has(submitter));
 		for (const [id, headEntry] of headIds) {
 			const baseEntry = baseIds.get(id);
 			if (!baseEntry) {
-				// New entry: the submitter must own the plugin repo it pins.
-				if (ownerOf(headEntry) !== submitter) {
+				// New entry: the submitter must own the plugin repo it pins
+				// (org members may submit org-owned official entries).
+				if (!maySubmit(headEntry)) {
 					die(`[3] new entry "${id}" pins ${headEntry.repo} but PR is from @${submitter} — you may only submit entries for repos you own`);
 				}
 				continue;
@@ -286,13 +302,13 @@ async function main() {
 			if (headEntry.repo !== baseEntry.repo) {
 				die(`[3] entry "${id}" changed repo (${baseEntry.repo} → ${headEntry.repo}) — modifying others' entries is not allowed`);
 			}
-			if (ownerOf(baseEntry) !== submitter) {
+			if (!maySubmit(baseEntry)) {
 				die(`[3] entry "${id}" belongs to ${baseEntry.repo} but PR is from @${submitter} — modifying others' entries is not allowed`);
 			}
 		}
 		// Removals follow the same rule: you may only remove your own entries.
 		for (const [id, baseEntry] of baseIds) {
-			if (!headIds.has(id) && ownerOf(baseEntry) !== submitter) {
+			if (!headIds.has(id) && !maySubmit(baseEntry)) {
 				die(`[3] PR removes "${id}" (repo ${baseEntry.repo}) owned by @${ownerOf(baseEntry)} — PR is from @${submitter}`);
 			}
 		}
